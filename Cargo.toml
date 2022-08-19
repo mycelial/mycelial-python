@@ -10,5 +10,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
-mycelial-crdt = { path = "../mycelial-core/mycelial-crdt" }
+mycelial-crdt = "0.2.5"
 serde_json = "1"
