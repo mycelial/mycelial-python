@@ -11,7 +11,7 @@ jobs:
         python-version:
         # - '3.7'
         # - '3.8'
-        # - '3.9'
+          - '3.9'
           - '3.10'
         target:
           - x86_64
@@ -21,7 +21,7 @@ jobs:
         uses: messense/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          manylinux: 2_24
+          manylinux: auto
           args: -i ${{ matrix.python-version }} --release --out dist
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -36,7 +36,7 @@ jobs:
         python-version:
         # - '3.7'
         # - '3.8'
-        # - '3.9'
+          - '3.9'
           - '3.10'
         target:
           - x86_64
@@ -47,7 +47,7 @@ jobs:
         with:
           command: build
           target: ${{ matrix.target }}
-          manylinux: 2_24
+          manylinux: auto
           args: -i ${{ matrix.python-version }} --release --out dist
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -62,7 +62,7 @@ jobs:
         python-version:
         # - '3.7'
         # - '3.8'
-        # - '3.9'
+          - '3.9'
           - '3.10'
         target:
           - x86_64
@@ -74,7 +74,7 @@ jobs:
         with:
           command: build
           target: ${{ matrix.target }}
-          manylinux: 2_24
+          manylinux: auto
           args: -i ${{ matrix.python-version }} --release --out dist
       - name: Upload wheels
         uses: actions/upload-artifact@v2
@@ -89,7 +89,7 @@ jobs:
         python-version:
         # - '3.7'
         # - '3.8'
-        # - '3.9'
+          - '3.9'
           - '3.10'
         target:
           - aarch64
@@ -101,7 +101,7 @@ jobs:
         with:
           command: build
           target: ${{ matrix.target }}
-          manylinux: 2_24
+          manylinux: auto
           args: -i ${{ matrix.python-version }} --release --out dist
       - name: Upload wheels
         uses: actions/upload-artifact@v2
