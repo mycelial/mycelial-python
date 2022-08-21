@@ -5,10 +5,13 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "mycelial_bindings"
+name = "mycelial"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
 mycelial-crdt = "0.2.5"
 serde_json = "1"
+
+[package.metadata.maturin]
+python-source = "python"

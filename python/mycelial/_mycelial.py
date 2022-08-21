@@ -1,7 +1,6 @@
 import asyncio
-import mycelial_bindings
 import random
-
+from mycelial import mycelial
 from mycelial.transport.relay import V0Alpha
 
 
@@ -10,9 +9,9 @@ class Mycelial:
         if peer_id is None:
             peer_id = random.getrandbits(64)
         self.peer_id = peer_id
-        self.crdt = mycelial_bindings.List(self.peer_id)
+        self.crdt = mycelial.List(self.peer_id)
         self.transport = transport()
-        self._task = asyncio.create_task(
+        self._task = asyncio.get_event_loop().create_task(
             self.transport.spawn(self.peer_id, self.crdt)
         )
 

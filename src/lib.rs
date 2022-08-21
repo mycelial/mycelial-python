@@ -167,7 +167,7 @@ impl List {
 }
 
 #[pymodule]
-fn mycelial_bindings(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn mycelial(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<List>()?;
     Ok(())
 }
