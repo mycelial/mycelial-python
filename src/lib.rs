@@ -106,11 +106,19 @@ impl List {
     fn diff(&self, py: Python<'_>, vclock: PyObject) -> PyResult<PyObject> {
         if let Ok(encoded) = vclock.cast_as::<types::PyString>(py) {
             let vc: vclock::VClock =
-                serde_json::from_str(&encoded.to_string()).map_err(to_error)?;
+                serde_json::from_str(encoded.to_str()?).map_err(to_error)?;
             let diff = serde_json::to_string(&self.0.diff(&vc)).map_err(to_error)?;
             return Ok(diff.to_object(py));
         }
         Err(exceptions::PyValueError::new_err("bad vclock"))
+    }
+
+    fn apply(&mut self, py: Python<'_>, diff: PyObject) -> PyResult<()> {
+        if let Ok(encoded) = diff.cast_as::<types::PyString>(py) {
+            let diff: Vec<_> = serde_json::from_str(encoded.to_str()?).map_err(to_error)?;
+            return self.0.apply(&diff).map_err(to_error)
+        }
+        Err(exceptions::PyValueError::new_err("bad diff"))
     }
 
     fn to_vec(&self, py: Python<'_>) -> PyResult<PyObject> {
@@ -121,10 +129,45 @@ impl List {
         }
         Ok(l.into())
     }
+
+    fn set_on_update(&mut self, _py: Python<'_>, cb: PyObject) {
+        self.0.set_on_update(Box::new(move |ops| {
+            // FIXME: unwrap & ok()
+            let encoded = serde_json::to_string(&[ops]).unwrap();
+            Python::with_gil(|py| {
+                let tuple = types::PyTuple::new(py, vec![encoded]);
+                cb.call1(py, tuple).ok();
+            })
+        }));
+    }
+
+    fn unset_on_update(&mut self, _py: Python<'_>) {
+        self.0.unset_on_update()
+    }
+
+    fn set_on_apply(&mut self, _py: Python<'_>, cb: PyObject) {
+        self.0.set_on_apply(Box::new(move || {
+            Python::with_gil(|py| { cb.call0(py).ok(); });
+        }));
+    }
+
+    fn unset_on_apply(&mut self, _py: Python<'_>) {
+        self.0.unset_on_apply()
+    }
+
+    fn vclock_diff(&self, py: Python<'_>, vclock: PyObject) -> PyResult<PyObject> {
+        if let Ok(encoded) = vclock.cast_as::<types::PyString>(py) {
+            let vc: vclock::VClock = serde_json::from_str(encoded.to_str()?).map_err(to_error)?;
+            let lrdiff: vclock::VClockDiff = (self.0.vclock(), &vc).into();
+            let rldiff: vclock::VClockDiff = (&vc, self.0.vclock()).into();
+            return Ok(types::PyTuple::new(py, vec![lrdiff.into_iter().count() != 0, rldiff.into_iter().count() != 0]).into())
+        }
+        Err(exceptions::PyValueError::new_err("bad vclock"))
+    }
 }
 
 #[pymodule]
-fn mycelial(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn mycelial_bindings(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<List>()?;
     Ok(())
 }

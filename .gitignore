@@ -1,3 +1,5 @@
+__pycache__
+*.pyc
 /target
 /Cargo.lock
 .ipynb_checkpoints/

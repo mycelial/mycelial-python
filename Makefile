@@ -3,4 +3,4 @@ all:
 
 .PHONY: dev
 dev:
-	cargo-watch  -i 'Makefile*' -i '4913*' -i '*.ipynb' --why -s 'maturin build'
+	cargo-watch  -i 'Makefile*' -i '4913*' -i '*.ipynb' --why -s 'maturin develop'
